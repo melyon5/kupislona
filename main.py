@@ -6,7 +6,6 @@ logging.basicConfig(level=logging.INFO)
 
 user_sessions = {}
 
-
 @app.route('/post', methods=['POST'])
 def respond():
     request_data = request.json
@@ -25,12 +24,12 @@ def respond():
     logging.info(f"Ответ для Алисы: {reply}")
     return jsonify(reply)
 
-
 def build_reply(request_data, reply):
     user_id = request_data["session"]["user_id"]
 
     if request_data["session"]["new"]:
         user_sessions[user_id] = {
+            "stage": "elephant",
             "options": ["Не хочу.", "Не буду.", "Отстань!"]
         }
         reply["response"]["text"] = "Привет! Купи слона!"
@@ -41,13 +40,20 @@ def build_reply(request_data, reply):
     agree_words = ["ладно", "куплю", "покупаю", "хорошо"]
 
     if any(word in user_input for word in agree_words):
-        reply["response"]["text"] = "Слона можно найти на Яндекс.Маркете!"
-        reply["response"]["end_session"] = True
+        if user_sessions[user_id]["stage"] == "elephant":
+            user_sessions[user_id]["stage"] = "rabbit"
+            user_sessions[user_id]["options"] = ["Не хочу кролика.", "Он пушистый!", "Может, не надо?"]
+            reply["response"]["text"] = "Слона можно найти на Яндекс.Маркете! А теперь... купи кролика!"
+            reply["response"]["buttons"] = suggest_options(user_id)
+        else:
+            reply["response"]["text"] = "Кролика можно найти на Яндекс.Маркете! Спасибо за покупки :)"
+            reply["response"]["end_session"] = True
         return
 
-    reply["response"]["text"] = f"Все говорят '{user_input}', а ты купи слона!"
+    stage = user_sessions[user_id]["stage"]
+    item = "слона" if stage == "elephant" else "кролика"
+    reply["response"]["text"] = f"Все говорят '{user_input}', а ты купи {item}!"
     reply["response"]["buttons"] = suggest_options(user_id)
-
 
 def suggest_options(user_id):
     session = user_sessions[user_id]
@@ -58,12 +64,11 @@ def suggest_options(user_id):
     if len(suggestions) < 2:
         suggestions.append({
             "title": "Ладно",
-            "url": "https://market.yandex.ru/search?text=слон",
+            "url": "https://market.yandex.ru/search?text=" + session["stage"],
             "hide": True
         })
 
     return suggestions
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
