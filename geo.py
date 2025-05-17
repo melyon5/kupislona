@@ -2,27 +2,29 @@ import requests
 from math import sin, cos, sqrt, atan2, radians
 
 
+import requests
+
 def get_coordinates(city):
     try:
         url = "https://geocode-maps.yandex.ru/1.x/"
         params = {
-            'geocode': city,
+            'geocode': city.title(),  # Приводим к нормальному виду
             'format': 'json',
-            'apikey': "f3a0fe3a-b07e-4840-a1da-06f18b2ddf13"
+            'apikey': "40d1649f-0493-4b70-98ba-98533de7710b"
         }
         response = requests.get(url, params)
         data = response.json()
 
         features = data['response']['GeoObjectCollection']['featureMember']
         if not features:
-            print(f"Город не найден в геокодере: {city}")
+            print(f"[ОШИБКА] Город не найден: {city}")
             return None
 
         point_str = features[0]['GeoObject']['Point']['pos']
         return [float(x) for x in point_str.split(' ')]
 
     except Exception as e:
-        print(f"Ошибка в get_coordinates для города {city}: {e}")
+        print(f"[ОШИБКА] Ошибка в get_coordinates('{city}'): {e}")
         return None
 
 def get_country(city):
