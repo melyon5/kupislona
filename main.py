@@ -18,7 +18,7 @@ def get_country(city):
     try:
         url = "https://geocode-maps.yandex.ru/1.x/"
         params = {
-            "apikey": "f3a0fe3a-b07e-4840-a1da-06f18b2ddf13",
+            "apikey": "6bf2895d-8652-402b-a66b-98ce0ace342c",
             "geocode": city,
             "format": "json"
         }
