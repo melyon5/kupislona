@@ -2,12 +2,13 @@ from flask import Flask, request
 import logging
 import json
 import os
-from geo import get_country, get_distance, get_coordinates
+from geo import get_geo_info, get_distance
 
 app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO, filename='app.log',
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
+
 
 @app.route('/', methods=['POST'])
 def main():
@@ -23,7 +24,6 @@ def main():
 
     handle_dialog(response, request.json)
 
-    # Защита от ошибки: если текст не задан, пишем заглушку
     if 'text' not in response['response'] or not response['response']['text']:
         response['response']['text'] = 'Произошла ошибка. Попробуй ещё раз.'
 
@@ -48,12 +48,12 @@ def handle_dialog(res, req):
         res['response']['text'] = 'Ты не написал название ни одного города.'
 
     elif len(cities) == 1:
-        country = get_country(cities[0])
+        country = get_geo_info(cities[0], 'country')
         res['response']['text'] = f'Этот город в стране — {country}'
 
     elif len(cities) == 2:
-        p1 = get_coordinates(cities[0])
-        p2 = get_coordinates(cities[1])
+        p1 = get_geo_info(cities[0], 'coordinates')
+        p2 = get_geo_info(cities[1], 'coordinates')
 
         if p1 and p2:
             distance = get_distance(p1, p2)
@@ -79,5 +79,5 @@ def get_cities(req):
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # для Render
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
