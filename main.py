@@ -27,7 +27,7 @@ def get_country(city):
     except Exception as e:
         return e
 
-@app.route('/post', methods=['POST'])
+@app.route('/', methods=['POST'])
 def main():
     req = request.json
     logging.info('Request: %r', req)
