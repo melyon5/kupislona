@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO, filename='app.log', format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
-@app.route('/post', methods=['POST'])
+@app.route('/', methods=['POST'])
 def main():
 
     logging.info('Request: %r', request.json)
