@@ -8,23 +8,23 @@ def get_coordinates(city):
     try:
         url = "https://geocode-maps.yandex.ru/1.x/"
         params = {
-            'geocode': city.title(),  # Приводим к нормальному виду
+            'geocode': city.title(),
             'format': 'json',
-            'apikey': "40d1649f-0493-4b70-98ba-98533de7710b"
+            'apikey': "6bf2895d-8652-402b-a66b-98ce0ace342c"
         }
         response = requests.get(url, params)
         data = response.json()
 
         features = data['response']['GeoObjectCollection']['featureMember']
         if not features:
-            print(f"[ОШИБКА] Город не найден: {city}")
+            print(f"Город не найден: {city}")
             return None
 
         point_str = features[0]['GeoObject']['Point']['pos']
         return [float(x) for x in point_str.split(' ')]
 
     except Exception as e:
-        print(f"[ОШИБКА] Ошибка в get_coordinates('{city}'): {e}")
+        print(f"Ошибка в get_coordinates('{city}'): {e}")
         return None
 
 def get_country(city):
