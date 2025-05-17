@@ -50,18 +50,14 @@ def handle_dialog(res, req):
         res['response']['text'] = f'Этот город в стране — {country}'
 
     elif len(cities) == 2:
-
+        logging.info(f"Найдено два города: {cities[0]} и {cities[1]}")
         p1 = get_coordinates(cities[0])
         p2 = get_coordinates(cities[1])
         if p1 and p2:
             distance = get_distance(p1, p2)
             res['response']['text'] = f'Расстояние между этими городами: {round(distance)} км.'
-        else:
-            res['response']['text'] = 'Не удалось определить координаты одного из городов.'
-
     else:
-
-        res['response']['text'] = 'Слишком много городов!'
+            res['response']['text'] = 'Не удалось определить координаты одного из городов.'
 
 
 def get_cities(req):

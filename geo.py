@@ -15,15 +15,15 @@ def get_coordinates(city):
 
         features = data['response']['GeoObjectCollection']['featureMember']
         if not features:
+            print(f"Город не найден в геокодере: {city}")
             return None
 
         point_str = features[0]['GeoObject']['Point']['pos']
         return [float(x) for x in point_str.split(' ')]
 
     except Exception as e:
-        print(f'Ошибка в get_coordinates для города {city}: {e}')
+        print(f"Ошибка в get_coordinates для города {city}: {e}")
         return None
-
 
 def get_country(city):
     try:
