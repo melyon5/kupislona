@@ -14,6 +14,7 @@ cities = {
 
 session_data = {}
 
+
 def get_country(city):
     try:
         url = "https://geocode-maps.yandex.ru/1.x/"
@@ -23,9 +24,11 @@ def get_country(city):
             "format": "json"
         }
         data = requests.get(url, params).json()
-        return data['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty']['GeocoderMetaData']['AddressDetails']['Country']['CountryName']
+        return data['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty'][
+            'GeocoderMetaData']['AddressDetails']['Country']['CountryName']
     except Exception as e:
         return e
+
 
 @app.route('/', methods=['POST'])
 def main():
@@ -45,6 +48,7 @@ def main():
         res['response']['buttons'].append({'title': 'Помощь', 'hide': True})
     logging.info('Response: %r', res)
     return jsonify(res)
+
 
 def process_dialog(res, req):
     uid = req['session']['user_id']
@@ -80,6 +84,7 @@ def process_dialog(res, req):
                 res['response']['buttons'] = [{'title': 'Да', 'hide': True}, {'title': 'Нет', 'hide': True}]
         else:
             run_game(res, req)
+
 
 def run_game(res, req):
     uid = req['session']['user_id']
@@ -139,15 +144,18 @@ def run_game(res, req):
                 res['response']['text'] = 'Не тот город.'
     session_data[uid]['step'] += 1
 
+
 def extract_city(req):
     for entity in req['request']['nlu']['entities']:
         if entity['type'] == 'YANDEX.GEO':
             return entity['value'].get('city')
 
+
 def extract_name(req):
     for entity in req['request']['nlu']['entities']:
         if entity['type'] == 'YANDEX.FIO':
             return entity['value'].get('first_name')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
